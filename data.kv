@@ -1,0 +1,1045 @@
+#: import datetime datetime
+
+Base:
+
+<Base>:
+	Login:
+<Heading>:
+    size_hint: (None, None)
+    size: (app.root.width / 5, app.root.height / 10)
+    font_size: self.height / 4
+    canvas.before:
+        Color: 
+            rgba: 0,0,1,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            
+<Cell>:
+    size_hint: (None, None)
+    size: (app.root.width / 5, app.root.height / 12)
+    font_size: self.height / 6
+    canvas.before:
+        Color: 
+            rgba: 0,0.5,1,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<AltCell>:
+    canvas.before:
+        Color: 
+            rgba: 0.7,0.7,1,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<LinAltCell>:
+    size: (app.root.width / 10, app.root.height / 8)
+			
+<LinCell>:
+    size: (app.root.width / 5, app.root.height / 8)
+	
+<BlueLabel@Label>:
+    font_size: self.height / 3
+	color: 0, 0, 1, 1
+	
+<TextInput>:
+    font_size: self.height / 2
+	multiline: False
+
+	
+<HorizontalInput>:
+    name: ""
+    val: val
+	txt: ""
+    next: self
+    orientation: "horizontal" 
+    BlueLabel:
+        size_hint_x: 2
+        text: root.name
+    TextInput:
+        size_hint_x: 3
+		id: val
+        text: root.txt
+        on_text_validate: root.next.val.focus =True
+
+<VerticalInput>:
+    orientation: "vertical"
+    name: ""
+    val: val
+	txt: ""
+    BlueLabel:
+        size_hint_y: 1
+        text: root.name
+    TextInput:
+        size_hint_y: 1
+		id: val
+        text: root.txt
+
+<WhiteBoxLayout>:
+	canvas.before:
+		Color:
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+			
+<WhiteAnchorLayout>:
+	canvas.before:
+		Color:
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+
+<WhiteScreenManager>:
+    canvas.before:
+        Color:
+            rgba: 1, 1, 1, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<WhiteScreen>:
+	canvas.before:
+		Color:
+			rgba: 1, 1, 1, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+			
+<MyActionButton>:
+	background_image: "mybg.png"
+	background_normal: "mybg.png"
+	font_size: self.height / 3
+    canvas.before:
+		Color:
+			rgba: 0, 0, 1, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+			
+<Button>:
+	background_image: "mybg.png"
+	background_normal: "mybg.png"
+	font_size: self.height / 3
+    canvas.before:
+		Color:
+			rgba: 0, 0, 1, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+			
+<CenteredTable>:
+    n: 2
+    table: _table
+    orientation: "vertical"
+	WhiteAnchorLayout:
+		anchor_x: "center"
+		anchor_y: "top"
+        BoxLayout:
+            orientation: "vertical"
+            ScrollView:
+                BoxLayout:
+                    id: _table
+                    size_hint: None, None
+                    size: root.parent.width / root.n , root.parent.height* 5
+			
+<ReadingsScreen>:
+
+            
+<Login>:
+    spacing: 10
+    padding: 10
+	orientation: "vertical"
+	password: _password
+	user: _user
+    Image:
+        source: "iso.png"
+        size_hint_y:  8
+ 
+    HorizontalInput:
+        size_hint_y: 1
+        id: _user
+        name: "User Name"
+        focus: True
+            
+    BoxLayout:
+        size_hint_y: 1
+        orientation: "horizontal"    
+        BlueLabel:
+            size_hint_x: 2
+            text: "Password"
+        TextInput:
+            size_hint_x: 3
+            id: _password
+            password: True            
+            on_text_validate: app.root.validate(_user.val.text, _password.text, _message)
+    BoxLayout:
+        size_hint_y: 1
+        orientation: "horizontal"
+        
+        BlueLabel:
+			size_hint_x: 3
+			id: _message
+		
+        Button:
+			size_hint_x: 1
+            text: "Login"
+			on_press: app.root.validate(_user.val.text, _password.text, _message)
+			
+			
+<Home>:
+	orientation: "vertical"
+    sm: sm
+    title: _title
+	spacing: 5
+	ActionBar:
+        size_hint_y: 1
+		background_image: "mybg.png"
+		background_normal: "mybg.png"
+		background_down: ""
+		ActionView:
+			size: self.size
+			use_separator: True
+			ActionPrevious:
+                font_size: self.height / 3
+				title: 'ConsolTech'
+                
+				with_previous: True
+				on_press: sm.change("summary", "Summary")
+				on_release: sm.summary.generate_table()
+			
+			ActionGroup:
+                font_size: self.height / 3
+				text: "Administration"
+				MyActionButton:
+					text: "New Customer"
+                    on_press: sm.change("newcustomer", "Add New Customer")
+				MyActionButton:
+					text: "New Standard"
+                    on_press: sm.change("newstandard", "Add New Standard")
+                MyActionButton:
+                    text: "Upload"
+                    on_press: sm.change("upload", "Uploading Data...")
+			
+		
+                
+			ActionGroup:
+				text: "Calibration"
+				font_size: self.height / 3
+				
+                MyActionButton:
+					text: "Balance"
+					on_press: sm.change("instrument_info", "Balance Calibration")
+				MyActionButton:
+					text: "Autoclave"
+					on_press: sm.change("autoclave", "Autoclave Calibration")
+				
+                
+                MyActionButton:
+					text: "Pressure"
+                    on_press: sm.change("instrument_info", "Pressure Calibration")
+				MyActionButton:
+					text: "Temperature"
+                    on_press: sm.change("instrument_info", "Temperature Calibration")
+				MyActionButton:
+					text: "Flow"
+                    on_press: sm.change("instrument_info", "Flow Calibration")
+				MyActionButton:
+					text: "Volume"
+                    on_press: sm.change("instrument_info", "Volume Calibration")
+                MyActionButton:
+					text: "Current"
+                    on_press: sm.change("instrument_info", "Current Calibration")
+                MyActionButton:
+					text: "Voltage"
+                    on_press: sm.change("instrument_info", "Voltage Calibration")
+				MyActionButton:
+					text: "Mass Pieces"
+                    on_press: sm.change("instrument_info", "Mass Pieces Calibration")
+				MyActionButton:
+					text: "pH"
+                    on_press: sm.change("instrument_info", "pH Calibration")
+				MyActionButton:
+					text: "TDS"
+                    on_press: sm.change("instrument_info", "TDS Calibration")
+				MyActionButton:
+					text: "Conductivity"
+                    on_press: sm.change("instrument_info", "Conductivity Calibration")
+				
+	BlueLabel:
+		id: _title
+        size_hint_y: 1 
+		text: "Summary"
+			
+	HomeScreenManager:
+        size_hint_y: 8
+        id: sm
+        
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint_y: 1
+        Button:
+            font_size: self.height * 0.8
+            text: "[font=Modern Pictograms]R[/font]"
+            halign: "center"
+            markup: True
+            on_press: root.sm.clear_last()
+			
+            
+        Button:
+            font_size: self.height * 0.8
+            text: "[font=Modern Pictograms]X[/font]"
+            halign: "center"
+            markup: True
+            on_press: root.sm.clear()
+        
+        Button:
+            font_size: self.height * 0.8
+            on_press: root.sm.prev()
+            text: "[font=Modern Pictograms]<[/font]"
+            halign: "center"
+            markup: True
+        
+        Button:
+            font_size: self.height * 0.8
+            on_press: root.sm.next()
+            text: "[font=Modern Pictograms]>[/font]"
+            halign: "center"
+            markup: True
+        
+        Button:
+            font_size: self.height * 0.8
+            on_press: root.sm.record()
+            text: "[font=Modern Pictograms]e[/font]"
+            halign: "center"
+            markup: True
+            
+        Button:
+            font_size: self.height * 0.8
+            on_press: root.sm.submit()
+            text: "[font=Modern Pictograms]o[/font]"
+            halign: "center"
+            markup: True
+            
+
+<HomeScreenManager>:
+	summary: _summary
+	balance: _balance
+    upload: upload
+	autoclave: _autoclave
+	first: _first
+	SummaryScreen:
+		id: _summary
+		name: "summary"
+		
+	InstrumentInfoScreen:
+		name: "instrument_info"
+		
+	InstrumentSpecsScreen:
+		name: "instrument_specs"
+	
+	ReadingsScreen:
+		id: _first
+		name: "readings"
+	
+	PressureReadingsScreen:
+		name: "pressure_first"
+		
+    
+    NewCustomerScreen:
+        name: "newcustomer"
+        
+    NewStandardScreen:
+		name: "newstandard"
+    
+		
+    BalanceScreen:
+        id: _balance
+		name: "_balance"
+
+    UploadScreen:
+        id: upload
+        name: "upload"
+	
+	AutoclaveScreen:
+		id: _autoclave
+		name: "autoclave"
+		
+	ElectricalScreen:
+		id: electrical
+		name: "electrical"
+        
+<SummaryScreen>:
+	table: _table
+	WhiteAnchorLayout:
+		anchor_y: "top"
+        anchor_x: "center"
+		BoxLayout:
+			ScrollView:
+				BoxLayout:
+                    padding_x: root.width * 0.1
+					size_hint: None, None
+					size: root.width * 0.8, root.height * 3
+					id: _table
+	
+
+<PressureReadingsScreen>:
+
+<CheckCorrections>:
+	yes: _yes
+	no: _no
+	orientation: "vertical"
+	size_hint: None, None
+	size: app.root.width / 2, app.root.height / 4
+	padding: 10
+	spacing: 10
+	Label:
+		size_hint_y: 4
+		text: "Are you recording any corrected readings?"
+	BoxLayout:
+        size_hint_y: 1
+		spacing: 10
+		Button:
+			id: _yes
+			text: "Yes"
+		Button:
+			id: _no
+			text: "No"
+
+			
+<AutoclaveScreen>:
+	asm: asm
+	title: _title
+	BoxLayout:
+		orientation: "vertical"
+        BlueLabel:
+			id: _title
+            size_hint_y: 1
+            text: "Instrument Info."
+		AutoclaveScreenManager:
+            size_hint_y: 9
+			id: asm
+	
+
+<AutoclaveScreenManager>:
+	
+	AutoInfo:
+		name:"info"
+	
+	AutoSpecs:
+		name:"instrument_specs"
+	
+	AutoTemp:
+		name:"temp"
+		
+	AutoPressure:
+		name:"pressure"
+
+		
+<AutoInfo>:
+	
+<AutoSpecs>:					
+	unit: ""
+    WhiteAnchorLayout:
+        anchor_y: "center"
+		BoxLayout:
+			orientation: "vertical"
+			spacing: 10
+			padding: 10
+            BoxLayout:
+				Label:
+					color: 0, 0, 1, 1
+					size_hint_x: 3
+					font_size: self.height / 3
+					text: "Temp. Range"
+				TextInput:
+                    size_hint_x: 1
+					id: min_t
+                    on_text_validate: max_t.focus = True
+				BlueLabel:
+					size_hint_x: 1
+                    text: "-"
+					font_size: self.height
+				TextInput:
+                    size_hint_x: 1
+					id: max_t
+					on_text_validate: min_p.focus = True
+			BoxLayout:
+				Label:
+					color: 0, 0, 1, 1
+					size_hint_x: 3
+					font_size: self.height / 3
+                    text: "Pressure Range"
+				TextInput:
+                    size_hint_x: 1
+					id: min_p
+                    on_text_validate: max_p.focus = True
+				BlueLabel:
+					size_hint_x: 1
+                    text: "-"
+					font_size: self.height
+				TextInput:
+                    size_hint_x: 1
+					id: max_p
+					on_text_validate: res_t.focus = True
+			
+            HorizontalInput:
+				name: "Temp. Resolution"
+				id: res_t
+                next: res_p
+                
+			HorizontalInput:
+				name: "Pressure Resolution"
+				id: res_p
+				next: units_t
+			
+            HorizontalInput:
+				name: "Temp. Units"
+				id: units_t
+				next: units_p
+			
+            HorizontalInput:
+				name: "Pressure Units"
+				id: units_p
+                next: location
+                
+			HorizontalInput:
+				name: "Location"
+				id: location
+                next: _immersion
+				
+                
+			HorizontalInput:
+				name: "Immersion Depth"
+				id: _immersion
+				next: self
+                
+						
+<AutoTemp>:
+	
+<AutoPressure>:
+
+
+<ElectricalScreen>:
+	
+	esm: esm
+	BoxLayout:
+		orientation: "vertical"
+        BlueLabel:
+            size_hint: (None, None)
+            size: (600, 50)
+            text: root.esm.title
+		ElectricalScreenManager:
+			id: esm
+			title: ""
+
+<ElectricalScreenManager>:
+	EInfo:
+		name:"info"
+	ESpecs:
+		name:"instrument_specs"
+	ElectricalReadingsScreen:
+		name: "readings"
+<EInfo>:
+	
+
+<ESpecs>:
+
+<ElectricalReadingsScreen>:
+	WhiteAnchorLayout:
+		anchor_y: "center"
+		BoxLayout:
+			spacing: 10
+			size_hint: None, None
+			size: 600, 430 
+			BoxLayout:
+				orientation: "vertical"
+				size_hint: None, None
+				size: 150, 350
+				id: field_list
+			BoxLayout:
+				size_hint: None, None
+				size: 440, 350
+				orientation: "vertical"
+				spacing: 10
+				ScrollView:
+					size_hint: None, None
+					size: 440, 150
+					CenteredTable:
+						size_hint: None, None
+						size: 440, 600
+						id: table
+				
+				BoxLayout:
+					spacing: 10
+					VerticalInput:
+						id: input
+						size: 215, 100
+						name: "Input"
+					VerticalInput:
+						id: reading
+						size: 215, 100
+						name: "Reading"
+					
+				Button:
+					text: "Record"
+					on_press: root.record()
+				BoxLayout:
+					spacing: 10
+					TextInput:
+						id: comments
+						multiline: True
+						height: 100
+						size_hint_x: 3
+						text: "Comments"
+					Button: 
+						id: sub
+						size_hint_x: 1
+						text:"Next"
+						on_press: root.submit()
+
+
+<UploadScreen>:
+	messages: messages
+	BoxLayout:
+		BoxLayout:
+            size_hint_y: 1
+			orientation: "vertical"
+			spacing: 10
+            padding: 10
+			HorizontalInput:
+				name: "Host= http://"
+				id: host
+                
+			BoxLayout:
+                size_hint_y: 1
+				padding: root.width / 3, 0
+				Button:
+					text: "Upload"
+					on_press: root.upload()
+					
+			ListView:
+                canvas.before:
+                    Color: 
+                        rgba: 0,0,1,1
+                    Rectangle:
+                        pos: self.pos
+                        size: self.size
+                size_hint_y: 10
+				id: messages 
+				item_strings: []
+			
+        
+<NewCustomerScreen>:
+    WhiteAnchorLayout:
+        anchor_y: "center"
+        BoxLayout:
+            padding: 10, root.height / 3
+            orientation: "vertical"
+            spacing: 10
+            HorizontalInput:
+                name: "Customer Name"
+                id: cus_name
+                next: address
+                
+            HorizontalInput:
+                name: "Address"
+                id: address
+                next: phone
+                
+            HorizontalInput:
+                name: "Phone Number"
+                id: phone
+                next: email
+                
+            HorizontalInput:
+                name: "Email"
+                id: email
+                next: self
+
+
+
+<NewStandardScreen>:
+    WhiteAnchorLayout:
+        anchor_y: "center"
+        BoxLayout:
+            orientation: "vertical"
+            spacing: 10
+            padding: 10
+            HorizontalInput:
+                size_hint_y: 1
+                name: "Name"
+                id: std_name
+                next: serial
+            HorizontalInput:
+                size_hint_y: 1
+                name: "Serial Number"
+                id: serial
+                next: number
+            HorizontalInput:
+                size_hint_y: 1
+                name: "Certificate Number"
+                id: number
+                next: trace
+            TextInput:
+                size_hint_y: 2
+                text: "Traceability"
+                font_size: self.height/4
+                id: trace
+            BoxLayout:
+                size_hint_y: 5
+                ScrollView:
+                    BoxLayout:
+                        orientation: "vertical"
+                        WhiteAnchorLayout:
+                            anchor_x: "center"
+                            anchor_y: "top"
+                            BoxLayout:
+                                id: table
+                                size_hint: None, None
+                                size: root.width* 0.66, root.height
+				
+                    
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 2
+                spacing: 10
+                VerticalInput:
+                    name: "Nominal"
+                    id: nominal
+                VerticalInput:
+                    name: "Actual"
+                    id: actual
+                VerticalInput:
+                    name: "Uncertainty"
+                    id: uncertainty
+            
+<InstrumentInfoScreen>:
+	nom: ""
+	std: ""
+    WhiteAnchorLayout:
+        anchor_y: "center"
+        
+        BoxLayout:
+            orientation: "vertical"
+            spacing: 10
+            padding: 10
+			HorizontalInput:
+				name: "Due Date"
+				id: due
+				txt: root.get_date()
+				next: cus
+            HorizontalInput:
+                name: "Customer"
+                id: cus
+                next: nom
+            
+            HorizontalInput:
+                id: nom
+                name: "Name of Instrument"
+				text: root.nom
+                next: sn
+				
+            HorizontalInput:
+                id: sn    
+                name: "Serial Number"
+                next: man
+                    
+            
+            HorizontalInput:
+                name: "Manufacturer"
+                id: man
+                next: model
+            
+            HorizontalInput:
+                name: "Model"
+                id: model
+				next: standard
+                
+			HorizontalInput:
+				name: "Standard Used"
+				id: standard
+				text: root.std
+				
+            		
+<InstrumentSpecsScreen>:
+	unit: ""
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 10
+        padding: 10, root.height / 5
+        BoxLayout:
+            orientation: "horizontal"
+            BlueLabel:
+                size_hint_x: 3
+                color: 0, 0, 1, 1
+                text: "Range"
+            TextInput:
+                size_hint_x: 1
+                id: min
+            BlueLabel:
+                size_hint_x: 1
+                text: "-"
+                font_size: self.height
+            TextInput:
+                size_hint_x: 1
+                id: max
+            
+        HorizontalInput:
+            name: "Resolution"
+            id: res
+            next: units
+        HorizontalInput:
+            name: "Units"
+            id: units
+            text: root.unit
+			next: location	
+        HorizontalInput:
+            name: "Location"
+            id: location
+			next: _immersion	
+        HorizontalInput:
+            name: "Immersion Depth"
+            id: _immersion
+    
+
+<ReadingsScreen>:
+	txt:""
+	WhiteAnchorLayout:
+        anchor_y: "center"
+		BoxLayout:
+			orientation: "vertical"
+			spacing: 10
+			BlueLabel:
+				size_hint_y: 1
+				text: root.txt
+				
+			
+            
+            BoxLayout:
+                orientation: "vertical"
+                CenteredTable:
+                    id: _table
+			
+			BoxLayout:
+				orientation: "horizontal"
+				spacing: 10
+				size_hint_y: 2
+				BoxLayout:
+					spacing: 10
+					orientation: "horizontal"
+					VerticalInput:
+						name: "Input"
+                        id: nominal
+               
+					VerticalInput:
+						name: "Indicated"
+						id: actual
+					
+	
+			TextInput:
+				size_hint_y: 2
+                font_size: self.height / 4
+				multiline: True
+				id: comments
+				text: "Comments..."
+				
+			
+
+					
+<BalanceScreen>:
+	asm: _bsm
+    BoxLayout:
+        orientation: "vertical"
+        title: title
+        BlueLabel:
+            id: title
+            size_hint_y: 1
+            text: "Cold Start Measurement"
+            
+        BalanceScreenManager:
+            size_hint_y: 10
+			id: _bsm
+            
+<BalanceScreenManager>:
+    ColdStart:
+        name: "cold"
+    
+    SettlingTime:
+        name: "settling"
+    
+    LinearityUp:
+        name: "linearityup"
+        
+    Linearity:
+        name: "linearity"
+    TaringLinearity:
+        name: "taring"
+        
+    Repeatability:
+        name: "repeat"
+        
+    OffCenter:
+        name: "off"
+        
+        
+<ColdStart>:
+    WhiteAnchorLayout:
+        anchor_y: "center"
+        BoxLayout:
+            orientation: "vertical"
+			HorizontalInput:
+                size_hint_y: 1
+				name: "Cold start mass used"
+				id: mass
+			BoxLayout:
+                orientation: "vertical"
+                size_hint_y: 6
+                ScrollView:
+                    CenteredTable:
+                        id: table
+            BoxLayout:
+                orientation: "vertical"
+                size_hint_y: 1
+                padding: root.width / 3, 0
+                TextInput:
+                    id: cold_value
+                    
+<SettlingTime>:
+    WhiteAnchorLayout:
+        anchor_y: "center"
+    
+        BoxLayout:
+            orientation: "vertical"
+            BoxLayout:
+                size_hint_y: 5
+                ScrollView:
+                    CenteredTable:
+                        id: table
+            BoxLayout:
+                size_hint_y: 1
+                orientation: "vertical"
+                padding: root.width / 3, 0
+                TextInput:
+                    id: settling_value
+                    
+<LinearityUp>:    
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            orientation: "vertical"
+			BoxLayout:
+                orientation: "vertical"
+                size_hint_y: 5
+                ScrollView:
+                    BoxLayout:
+                        orientation: "vertical"
+                        WhiteAnchorLayout:
+                            anchor_x: "center"
+                            anchor_y: "top"
+                            BoxLayout:
+                                id: table
+                                size_hint: None, None
+                                size: root.width *0.66, root.height
+            BoxLayout:
+                orientation: "horizontal"
+                size_hint_y: 1
+                spacing: 10
+                VerticalInput:
+                    name: "Nominal Value"
+                    id: nominal_value
+                VerticalInput:
+                    name: "Linearity Up"
+                    id: linearity_value
+            
+            
+<Linearity>:    
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            orientation: "vertical"
+			size_hint_y: 6
+            WhiteAnchorLayout:
+                anchor_x: "left"
+				anchor_y: "top"
+				BoxLayout:
+					id: table
+						
+		BoxLayout:
+            size_hint_y: 1
+            padding: root.width / 3, 0
+            VerticalInput:
+                name: "Linearity Up"
+                id: _value
+            
+            
+            
+            
+<TaringLinearity>:
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: 6
+            orientation: "vertical"
+			ScrollView:
+				CenteredTable:
+					id: table
+        BoxLayout:
+            size_hint_y: 1
+            orientation: "horizontal"
+            spacing: 10
+            VerticalInput:
+                name: "Nominal"
+                id: nominal_value
+            VerticalInput:
+                name: "Taring Linearity"
+                id: tare_value
+                
+<Repeatability>:    
+    BoxLayout:
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: 5
+            orientation: "vertical"
+            ScrollView:
+				CenteredTable:
+					id: table
+        
+        BoxLayout:
+            size_hint_y: 1
+            padding: root.width / 3 , 10
+            VerticalInput:
+                name: "1/2 Load"
+                id: _value
+            
+<OffCenter>:
+    BoxLayout:
+        orientation: "vertical"
+        HorizontalInput:
+            size_hint_y: 1
+            name: "Mass piece used"
+			id: off
+        BoxLayout:
+            size_hint_y: 5
+            orientation: "horizontal"
+            Image:
+                size_hint_x: 1
+                size: 300, 300
+                source: "pan.png"
+            BoxLayout:
+                size_hint_x: 2
+                ScrollView:
+                    CenteredTable:
+                        id: table
+        BoxLayout:
+            size_hint_y: 1
+            orientation: "horizontal"
+            BlueLabel:
+                id: which
+                text: "Position"
+            TextInput:
+                id: _value
