@@ -1378,6 +1378,7 @@ class OffCenter(BalanceCalibrationScreen):
         self.count = 0
     
     def clear_last(self):
+        self.count -= 1
         l = len(self.readings) - 1
         self.readings = self.readings[:l]
         self.ids.table.table.clear_widgets()

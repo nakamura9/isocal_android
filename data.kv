@@ -155,7 +155,7 @@ Base:
 	user: _user
     Image:
         source: "iso.png"
-        size_hint_y:  8
+        size_hint_y:  5
  
     HorizontalInput:
         size_hint_y: 1
@@ -623,7 +623,7 @@ Base:
                     Rectangle:
                         pos: self.pos
                         size: self.size
-                size_hint_y: 10
+                size_hint_y: 6
 				id: messages 
 				item_strings: []
 			
@@ -632,7 +632,7 @@ Base:
     WhiteAnchorLayout:
         anchor_y: "center"
         BoxLayout:
-            padding: 10, root.height / 3
+            padding: 10, root.height / 4
             orientation: "vertical"
             spacing: 10
             HorizontalInput:
@@ -689,13 +689,9 @@ Base:
                 ScrollView:
                     BoxLayout:
                         orientation: "vertical"
-                        WhiteAnchorLayout:
-                            anchor_x: "center"
-                            anchor_y: "top"
-                            BoxLayout:
-                                id: table
-                                size_hint: None, None
-                                size: root.width* 0.66, root.height
+                        id: table
+                        size_hint: None, None
+                        size: root.width* 0.66, root.height * 5
 				
                     
             BoxLayout:
@@ -721,7 +717,7 @@ Base:
         BoxLayout:
             orientation: "vertical"
             spacing: 10
-            padding: 10
+            padding: 10, root.height * 0.0714
 			HorizontalInput:
 				name: "Due Date"
 				id: due
@@ -765,7 +761,7 @@ Base:
     BoxLayout:
         orientation: "vertical"
         spacing: 10
-        padding: 10, root.height / 5
+        padding: 10, root.height * 0.1875
         BoxLayout:
             orientation: "horizontal"
             BlueLabel:
@@ -913,12 +909,10 @@ Base:
                 size_hint_y: 1
 				name: "Cold start mass used"
 				id: mass
-			BoxLayout:
-                orientation: "vertical"
+            CenteredTable:
+                padding: root.width * 0.3, 0
                 size_hint_y: 6
-                ScrollView:
-                    CenteredTable:
-                        id: table
+                id: table
             BoxLayout:
                 orientation: "vertical"
                 size_hint_y: 1
@@ -927,23 +921,19 @@ Base:
                     id: cold_value
                     
 <SettlingTime>:
-    WhiteAnchorLayout:
-        anchor_y: "center"
-    
+    BoxLayout:
+        orientation: "vertical"
+        CenteredTable:
+            padding: root.width * 0.3, 0
+            size_hint_y: 7
+            id: table
         BoxLayout:
+            size_hint_y: 1
             orientation: "vertical"
-            BoxLayout:
-                size_hint_y: 5
-                ScrollView:
-                    CenteredTable:
-                        id: table
-            BoxLayout:
-                size_hint_y: 1
-                orientation: "vertical"
-                padding: root.width / 3, 0
-                TextInput:
-                    id: settling_value
-                    
+            padding: root.width / 3, 0
+            TextInput:
+                id: settling_value
+                        
 <LinearityUp>:    
     BoxLayout:
         orientation: "vertical"
@@ -951,17 +941,14 @@ Base:
             orientation: "vertical"
 			BoxLayout:
                 orientation: "vertical"
-                size_hint_y: 5
+                size_hint_y: 6
+                padding: root.width * 0.2, 0
                 ScrollView:
                     BoxLayout:
                         orientation: "vertical"
-                        WhiteAnchorLayout:
-                            anchor_x: "center"
-                            anchor_y: "top"
-                            BoxLayout:
-                                id: table
-                                size_hint: None, None
-                                size: root.width *0.66, root.height
+                        id: table
+                        size_hint: None, None
+                        size: root.width *0.66, root.height * 3
             BoxLayout:
                 orientation: "horizontal"
                 size_hint_y: 1
@@ -980,11 +967,12 @@ Base:
         BoxLayout:
             orientation: "vertical"
 			size_hint_y: 6
-            WhiteAnchorLayout:
-                anchor_x: "left"
-				anchor_y: "top"
+            padding: root.width* 0.2, 0
+            ScrollView:
 				BoxLayout:
 					id: table
+                    size_hint: None, None
+                    size: root.width*0.66, root.height * 3
 						
 		BoxLayout:
             size_hint_y: 1
@@ -999,12 +987,10 @@ Base:
 <TaringLinearity>:
     BoxLayout:
         orientation: "vertical"
-        BoxLayout:
+		CenteredTable:
             size_hint_y: 6
-            orientation: "vertical"
-			ScrollView:
-				CenteredTable:
-					id: table
+            padding: root.width * 0.3, 0
+			id: table
         BoxLayout:
             size_hint_y: 1
             orientation: "horizontal"
@@ -1019,16 +1005,14 @@ Base:
 <Repeatability>:    
     BoxLayout:
         orientation: "vertical"
-        BoxLayout:
-            size_hint_y: 5
-            orientation: "vertical"
-            ScrollView:
-				CenteredTable:
-					id: table
+        CenteredTable:
+            id: table
+            padding: root.width * 0.3, 0
+            size_hint_y: 6
         
         BoxLayout:
             size_hint_y: 1
-            padding: root.width / 3 , 10
+            padding: root.width / 3 , 0
             VerticalInput:
                 name: "1/2 Load"
                 id: _value
@@ -1041,17 +1025,16 @@ Base:
             name: "Mass piece used"
 			id: off
         BoxLayout:
-            size_hint_y: 5
+            size_hint_y: 7
             orientation: "horizontal"
             Image:
                 size_hint_x: 1
                 size: 300, 300
                 source: "pan.png"
-            BoxLayout:
+            CenteredTable:
+                id: table
                 size_hint_x: 2
-                ScrollView:
-                    CenteredTable:
-                        id: table
+                
         BoxLayout:
             size_hint_y: 1
             orientation: "horizontal"
