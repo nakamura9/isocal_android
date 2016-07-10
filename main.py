@@ -346,10 +346,9 @@ class CheckCorrections(BoxLayout):
     yes= ObjectProperty()
     no= ObjectProperty()
     
-class ReadingsScreen(WhiteScreen):
-    txt = StringProperty()
+class AbstractReadingsScreen(WhiteScreen):
     def __init__(self, *args, **kwargs):
-        super(ReadingsScreen, self).__init__(*args, **kwargs)
+        super(AbstractReadingsScreen, self).__init__(*args, **kwargs)
         self.count = 0
         self.readings = {"indicated": [],
                           "actual": []}
@@ -363,7 +362,7 @@ class ReadingsScreen(WhiteScreen):
             self.ids._table.table.clear_widgets()
             
     def clear_last(self):
-        headings = []
+        headings = []                                                                                         
         for i in self.readings:
             headings.append(i)
             l = len(self.readings[i]) - 1
@@ -489,8 +488,11 @@ class ReadingsScreen(WhiteScreen):
             self.with_corrections = False
             self.parent.summary.generate_table()
             self.parent.current= "summary"
+            
+class ReadingsScreen(AbstractReadingsScreen):
+    pass
     
-class PressureReadingsScreen(ReadingsScreen):
+class PressureReadingsScreen(AbstractReadingsScreen):
     
     def __init__(self, *args, **kwargs):
         super(PressureReadingsScreen, self).__init__(*args, **kwargs)

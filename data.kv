@@ -136,16 +136,13 @@ Base:
     n: 2
     table: _table
     orientation: "vertical"
-	WhiteAnchorLayout:
-		anchor_x: "center"
-		anchor_y: "top"
-        BoxLayout:
-            orientation: "vertical"
-            ScrollView:
-                BoxLayout:
-                    id: _table
-                    size_hint: None, None
-                    size: root.parent.width / root.n , root.parent.height* 5
+    BoxLayout:
+        orientation: "vertical"
+        ScrollView:
+            BoxLayout:
+                id: _table
+                size_hint: None, None
+                size: root.parent.width / root.n , root.parent.height* 5
 			
 <ReadingsScreen>:
 
@@ -375,16 +372,13 @@ Base:
         
 <SummaryScreen>:
 	table: _table
-	WhiteAnchorLayout:
-		anchor_y: "top"
-        anchor_x: "center"
-		BoxLayout:
-			ScrollView:
-				BoxLayout:
-                    padding_x: root.width * 0.1
-					size_hint: None, None
-					size: root.width * 0.8, root.height * 3
-					id: _table
+	BoxLayout:
+        padding: root.width * 0.1 , 0
+		ScrollView:
+			BoxLayout:
+				size_hint: None, None
+				size: root.width * 0.8, root.height * 3
+				id: _table
 	
 
 <PressureReadingsScreen>:
@@ -808,45 +802,68 @@ Base:
     
 
 <ReadingsScreen>:
-	txt:""
-	WhiteAnchorLayout:
-        anchor_y: "center"
+    BoxLayout:
+		orientation: "vertical"
+		spacing: 10
+		CenteredTable:
+            size_hint_y: 5
+            padding: root.width * 0.3, 0
+            id: _table
+			
 		BoxLayout:
-			orientation: "vertical"
+			orientation: "horizontal"
 			spacing: 10
-			BlueLabel:
-				size_hint_y: 1
-				text: root.txt
-				
-			
-            
-            BoxLayout:
-                orientation: "vertical"
-                CenteredTable:
-                    id: _table
-			
+			size_hint_y: 2
 			BoxLayout:
-				orientation: "horizontal"
 				spacing: 10
-				size_hint_y: 2
-				BoxLayout:
-					spacing: 10
-					orientation: "horizontal"
-					VerticalInput:
-						name: "Input"
-                        id: nominal
+				orientation: "horizontal"
+				VerticalInput:
+                    name: "Input"
+                    id: nominal
                
-					VerticalInput:
-						name: "Indicated"
-						id: actual
+				VerticalInput:
+					name: "Indicated"
+					id: actual
 					
 	
-			TextInput:
-				size_hint_y: 2
-                font_size: self.height / 4
-				multiline: True
-				id: comments
-				text: "Comments..."
+		TextInput:
+			size_hint_y: 1
+            font_size: self.height / 4
+			multiline: True
+			id: comments
+			text: "Comments..."
+            
+<PressureReadingsScreen>:
+    BoxLayout:
+		orientation: "vertical"
+		spacing: 10
+		CenteredTable:
+            size_hint_y: 5
+            padding: root.width * 0.2, 0
+            id: _table
+			
+		BoxLayout:
+			orientation: "horizontal"
+			spacing: 10
+			size_hint_y: 2
+			BoxLayout:
+				spacing: 10
+				orientation: "horizontal"
+				VerticalInput:
+                    name: "Applied Mass"
+                    id: nominal
+               
+				VerticalInput:
+					name: "Indicated Pressure"
+					id: actual
+					
+	
+		TextInput:
+			size_hint_y: 1
+            font_size: self.height / 4
+			multiline: True
+			id: comments
+			text: "Comments..."
 				
 			
 
