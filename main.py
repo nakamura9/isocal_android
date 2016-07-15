@@ -38,7 +38,7 @@ import requests
 from kivy.core.text import LabelBase
 
 LabelBase.register(name= "Modern Pictograms",
-                   fn_regular = "ModernPictograms.ttf")
+                   fn_regular = os.join(os.path.abspath(), "ModernPictograms.ttf"))
 root = os.getcwd()
 Window.clear_color = [1, 1, 1, 1]
 WindowBase.softinput_mode = "below_target"
@@ -102,10 +102,6 @@ class Base(WhiteBoxLayout):
         else:
             _label.text = "wrong name"
             
-    def gohome(self):
-        time.sleep(1)
-        self.home.sm.summary.generate_table()
-        self.home.sm.change("summary", "Summary")
         
             
 class HorizontalInput(WhiteBoxLayout):
@@ -140,7 +136,6 @@ class SummaryScreen(Screen):
     table = ObjectProperty()
     def __init__(self, *args, **kwargs):
         super(SummaryScreen, self).__init__(*args, **kwargs)
-        #self.generate_table()
         
     def generate_table(self):
         global outstanding
