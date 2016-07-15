@@ -38,7 +38,7 @@ import requests
 from kivy.core.text import LabelBase
 
 LabelBase.register(name= "Modern Pictograms",
-                   fn_regular = os.join(os.path.abspath(), "ModernPictograms.ttf"))
+                   fn_regular = os.path.join(os.path.abspath(), "ModernPictograms.ttf"))
 root = os.getcwd()
 Window.clear_color = [1, 1, 1, 1]
 WindowBase.softinput_mode = "below_target"
