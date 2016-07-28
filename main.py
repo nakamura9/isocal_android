@@ -24,7 +24,10 @@ from kivy.core.window import WindowBase
 from kivy.uix.progressbar import ProgressBar
 from kivy.uix.popup import Popup
 from kivy.network.urlrequest import UrlRequest
-from _datetime import timedelta
+try:
+    from _datetime import timedelta
+except:
+    from datetime import timedelta
 try:
     from urllib import urlencode
 except:
@@ -306,7 +309,7 @@ class InstrumentSpecsScreen(WhiteScreen):
         location= self.ids.location.val.text
         immersion= self.ids._immersion.val.text
         instrument_unit_lexicon={"pressure": ["bar", "psi", "mpa", "kpa", "pa"],
-                                 "temperature": ["celcius", "fahrenheit"],
+                                 "temperature": ["celsius", "fahrenheit"],
                                  "tds": ["ppm", "ppt", "ppb"],
                                  "volume": ["litre", "ml", "m3"],
                                  "flow": ["l/min", "cf/min", "l/hr", "m3/hr", "cf/hr"],
@@ -402,7 +405,7 @@ class AbstractReadingsScreen(WhiteScreen):
             self.first = readings_combined(self.readings)
             print("readings at next: ", self.readings)
             
-            if self.count < 2:
+            if self.count < 1:
                 p = Popup(size_hint=(None, None), size=(400, 200),
                               title = "Warning!",
                               content=Label(text="You have recorded too few values"))
