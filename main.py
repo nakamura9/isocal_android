@@ -780,14 +780,29 @@ class NewStandardScreen(WhiteScreen):
                           "uncertainty": []}
     
     def record(self):
-        self.readings["nominal"].append(self.ids.nominal.val.text)
-        self.readings["actual"].append(self.ids.actual.val.text)
-        self.readings["uncertainty"].append(self.ids.uncertainty.val.text)
-        self.ids.nominal.val.text = ""
-        self.ids.actual.val.text = ""
+        if self.ids.nominal.val.text == "" or self.ids.actual.val.text == "":
+            pass
+        else:
+            self.readings["nominal"].append(self.ids.nominal.val.text)
+            self.readings["actual"].append(self.ids.actual.val.text)
+            self.readings["uncertainty"].append(self.ids.uncertainty.val.text)
+            self.ids.nominal.val.text = ""
+            self.ids.actual.val.text = ""
+            self.ids.table.clear_widgets()
+            self.ids.table.add_widget(table(["nominal", "actual", "uncertainty"], self.readings))
+    def clear(self):
+        self.readings = {"nominal": [],
+                          "actual": [],
+                          "uncertainty": []}
+        self.ids.table.clear_widgets()
+        
+    def clear_last(self):
+        for i in self.readings:
+            l = len(self.readings[i]) - 1
+            self.readings[i] = self.readings[i][:l]
         self.ids.table.clear_widgets()
         self.ids.table.add_widget(table(["nominal", "actual", "uncertainty"], self.readings))
-        
+    
     def submit(self):
         global standards
         trace = self.ids.trace.text
@@ -876,8 +891,6 @@ class AutoPressure(PressureReadingsScreen):
         global outstanding
         info= self.parent.instrument_info
         specs = self.parent.instrument_specs
-        print(self.parent.temp_readings)
-        print(readings_combined(self.readings))
         d=datetime.date.today().strftime("%y/%m/%d") 
         id = datetime.date.today().strftime("%d%m%Y")+info[1]
         autoclave.put(id,
@@ -1250,7 +1263,7 @@ class Linearity(BalanceCalibrationScreen):
                 return
             self.count -= 1
             self.ids.table.clear_widgets()
-            self.ids.table.add_widget(horizontal_table(["Linearity Up", "Linearity Down", "Linearity up"],
+            self.ids.table.add_widget(table(["Linearity Up", "Linearity Down", "Linearity up"],
                                                           self.readings))
         
     def record(self):
@@ -1412,7 +1425,8 @@ class OffCenter(BalanceCalibrationScreen):
             self.readings = []
             self.parent.off_center_mass = self.ids.off.val.text
             self.parent.calibrate()
-            self.parent.asm.current = "cold" 
+            self.parent.current = "cold" 
+
 def table( data=[], values= {}):
     layout = GridLayout(cols = len(data))
     l = longest(values)

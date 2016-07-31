@@ -162,6 +162,7 @@ Base:
         id: _user
         name: "User Name"
         focus: True
+        
             
     BoxLayout:
         size_hint_y: 1
@@ -678,13 +679,13 @@ Base:
                 size_hint_y: 1
                 name: "Certificate Number"
                 id: number
-                next: trace
             TextInput:
                 size_hint_y: 2
                 text: "Traceability"
                 font_size: self.height/4
                 id: trace
             BoxLayout:
+                padding: root.width * 0.165, 10
                 size_hint_y: 5
                 ScrollView:
                     BoxLayout:
@@ -967,7 +968,6 @@ Base:
         BoxLayout:
             orientation: "vertical"
 			size_hint_y: 6
-            padding: root.width* 0.2, 0
             ScrollView:
 				BoxLayout:
 					id: table
