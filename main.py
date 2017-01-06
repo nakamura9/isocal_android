@@ -69,11 +69,6 @@ class UploadMessage(Label):
 class AltCell(Cell):
     pass
 
-class LinCell(Cell):
-    pass
-
-class LinAltCell(AltCell):
-    pass
 
 class MyActionButton(ActionItem, Button):
     pass
@@ -262,6 +257,10 @@ class InstrumentInfoScreen(WhiteScreen):
      
      def change(self):
          self.parent.current= "instrument_specs"
+
+     def previous(self):
+         pass 
+
      def next(self):
          global standards
          due = self.ids.due.val.text
@@ -273,17 +272,17 @@ class InstrumentInfoScreen(WhiteScreen):
          standard = self.ids.standard.val.text
          stds = list(standards.keys())
          if name == "" or customer == "" or standard == "":
-             p=Popup(title="Warning!", size_hint=(None, None), size=(300, 150),
+             p=Popup(title="Warning!", size_hint=(0.5, 0.2),
                      content=Label(text= "Some fields cannot be empty"))
              p.open()
          elif standard not in standards:
-             p=Popup(title="Warning!", size_hint=(None, None), size=(400, 400),
+             p=Popup(title="Warning!", size_hint=(1, 0.5),
                      content=Label(text= "The Instrument cannot be calibrated without \n"
                                    "an acompanying standard. These are available:\n"
                                    "{}".format("\n".join(stds))))
              p.open()
          elif self.parent.type == "mass" and standard not in standards:
-             p=Popup(title="Warning!", size_hint=(None, None), size=(400, 200),
+             p=Popup(title="Warning!", size_hint=(1, 0.6), 
                      content=Label(text= "The balance cannot be calibrated without \n"
                                    "an acompanying standard. These are available:\n"
                                    "{}".format(standards.keys())))
@@ -311,7 +310,7 @@ class InstrumentSpecsScreen(WhiteScreen):
         instrument_unit_lexicon={"pressure": ["bar", "psi", "mpa", "kpa", "pa"],
                                  "temperature": ["celsius", "fahrenheit"],
                                  "tds": ["ppm", "ppt", "ppb"],
-                                 "volume": ["litre", "ml", "m3"],
+                                 "volume": ["litre", "millilitre", "cubic meter", "microlitre", "cubic foot"],
                                  "flow": ["l/min", "cf/min", "l/hr", "m3/hr", "cf/hr"],
                                  "balance": ["grams", "kgs"],
                                  "current": ["amp", "milliamp"],
@@ -322,15 +321,15 @@ class InstrumentSpecsScreen(WhiteScreen):
                                  }
         
         if min=="" or max=="" or res=="" or units=="" or location=="":
-            p=Popup(title="Warning!", size_hint=(None, None), size=(300, 150),
-                    content=Label(text= "Some fields cannot be empty"))
+            p=Popup(title="Warning!", size_hint=(0.5, 0.1),
+                    content=Label(text= "Some fields cannot be left empty"))
             p.open()
         else:
             if self.parent.type in instrument_unit_lexicon:
                 if units not in instrument_unit_lexicon[self.parent.type]:
-                    p = Popup(size_hint =(None, None), size=(400, 200), title = "Warning!",
-                              content=Label(text="""You Have entered an invalid unit. Try one of
-                                              {}""".format(", ".join(instrument_unit_lexicon[self.parent.type]))))
+                    p = Popup(size_hint =(1, 0.6), title = "Warning!",
+                              content=Label(text="You Have entered an invalid unit. Try one of:\n>{}".format( \
+                                  "\n> ".join(instrument_unit_lexicon[self.parent.type]))))
                     p.open()
                 else:
                     self.parent.instrument_specs = [min, max, res, units, location, immersion]
@@ -372,6 +371,7 @@ class AbstractReadingsScreen(WhiteScreen):
     def data_add(self):
         '''this method abstracts the data addition of the program while ensuring that 
         the popup can halt executiom in record'''
+        
         self.readings["indicated"].append(self.ids.actual.val.text)
         self.readings["actual"].append(self.ids.nominal.val.text)
         self.ids._table.table.add_widget(table(["indicated", "actual"], self.readings))
@@ -385,16 +385,24 @@ class AbstractReadingsScreen(WhiteScreen):
         
     def record(self):
         self.count += 1
+        try:
+            float(self.ids.nominal.val.text)
+            float(self.ids.actual.val.text)
+        except:
+            p = Popup(title="Warning", size_hint = (1, 0.3), content=Label(text="The data entered was invalid," 
+                                                            "check if you used a comma(,) \n"
+                                                            "instead of a period(.)"))
+            p.open()
         if self.ids.nominal.val.text == "" or self.ids.actual.val.text == "":
-            p = Popup(title="Warning", size_hint = (None, None),
-                      size=(400, 200), content=Label(text="You cannot enter empty fields"))
+            p = Popup(title="Warning", size_hint = (0.5, 0.1),
+                      content=Label(text="You cannot enter empty fields"))
             p.open()
         else:
             try:
                 self.ids._table.table.clear_widgets()
                 self.data_add()
             except Exception as e:
-                p = Popup(size_hint=(None, None), size=(400, 200),
+                p = Popup(size_hint=(0.5, 0.3),
                           title = "Warning! You have entered and invalid Value",
                           content=Label(text="Error: {}".format(e)))
                 p.open()
@@ -406,15 +414,15 @@ class AbstractReadingsScreen(WhiteScreen):
             print("readings at next: ", self.readings)
             
             if self.count < 1:
-                p = Popup(size_hint=(None, None), size=(400, 200),
+                p = Popup(size_hint=(0.5, 0.1),
                               title = "Warning!",
                               content=Label(text="You have recorded too few values"))
                 p.open()
             else:
                 self.clear_readings()
                 content = CheckCorrections()
-                p = Popup(title="Important", size_hint = (None, None),
-                          size=(content.width * 1.05, content.height* 1.2), content=content)
+                p = Popup(title="Important", size_hint = (1, 0.6),
+                content=content)
                 content.yes.bind(on_press = self.corrections)
                 content.no.bind(on_press =self.no_corrections)
                 content.yes.bind(on_release= p.dismiss)
@@ -707,7 +715,7 @@ class UploadScreen(WhiteScreen):
         try:
             if self.host == "":
                 p = Popup(title= "warning", content= Label(text="The host cannot be empty"),
-                          size_hint=(None, None), size=(300,150))
+                size_hint=(0.5, 0.1))
                 p.open()
             else:
                 self.messages.item_strings.append("Connecting to the server...")
@@ -754,22 +762,7 @@ class UploadScreen(WhiteScreen):
         # if it fails give a reason
         
         
-        
-class NewCustomerScreen(WhiteScreen):
-    
-    def submit(self):
-        global customers
-        customers.put(self.ids.cus_name.val.text,
-                      name=self.ids.cus_name.val.text, 
-                      address=self.ids.address.val.text,
-                      phone=self.ids.phone.val.text,
-                      email=self.ids.email.val.text)
-        
-        self.ids.cus_name.val.text = "" 
-        self.ids.address.val.text = ""
-        self.ids.phone.val.text = ""
-        self.ids.email.val.text = ""
-        self.parent.change("summary", "Summary")
+
 
 class NewStandardScreen(WhiteScreen):
     
@@ -783,13 +776,24 @@ class NewStandardScreen(WhiteScreen):
         if self.ids.nominal.val.text == "" or self.ids.actual.val.text == "":
             pass
         else:
-            self.readings["nominal"].append(self.ids.nominal.val.text)
-            self.readings["actual"].append(self.ids.actual.val.text)
-            self.readings["uncertainty"].append(self.ids.uncertainty.val.text)
-            self.ids.nominal.val.text = ""
-            self.ids.actual.val.text = ""
-            self.ids.table.clear_widgets()
-            self.ids.table.add_widget(table(["nominal", "actual", "uncertainty"], self.readings))
+            try:
+                float(self.ids.nominal.val.text)
+                float(self.ids.actual.val.text)
+                float(self.ids.uncertainty.val.text)
+                self.readings["nominal"].append(self.ids.nominal.val.text)
+                self.readings["actual"].append(self.ids.actual.val.text)
+                self.readings["uncertainty"].append(self.ids.uncertainty.val.text)
+                self.ids.nominal.val.text = ""
+                self.ids.actual.val.text = ""
+                self.ids.table.clear_widgets()
+                self.ids.table.add_widget(table(["nominal", "actual", "uncertainty"], self.readings))
+            except ValueError:
+                p = Popup(title="Warning", size_hint = (1,0.3), 
+                content=Label(text="The data entered was invalid, \n" 
+                                                            "check if you used a comma(,) \n"
+                                                            "instead of a period(.)"))
+                p.open()
+            
     def clear(self):
         self.readings = {"nominal": [],
                           "actual": [],
@@ -854,7 +858,9 @@ class AutoInfo(WhiteScreen):
      
     def change(self):
         self.parent.change("instrument_specs", "Specifications")
-    
+    def previous(self):
+        pass
+
     def next(self):
          global standards
          due = self.ids.due.val.text
@@ -896,6 +902,8 @@ class AutoInfo(WhiteScreen):
 
 
 class AutoSpecs(WhiteScreen):
+    def previous(self):
+        self.parent.change("info", "Instrument Info")
     def next(self):
         range_temp = self.ids.min_t.text + "-" + self.ids.max_t.text
         range_pressure = self.ids.min_p.text + "-" + self.ids.max_p.text
@@ -955,7 +963,7 @@ class AutoPressure(PressureReadingsScreen):
                       units_temp=specs[5],
                       units_p=specs[3],
                       standard_temp=info[5],
-                      standard_p= info[6]
+                      standard_p= info[6],
                       location=specs[6],
                       comments=self.ids.comments.text,
                       temp=readings_combined(self.parent.temp_readings),
@@ -1071,11 +1079,22 @@ class BalanceCalibrationScreen(WhiteScreen):
     def record(self, val):
         self.count += 1
         if self.count > 10:
-            print("too many values")
+            return
+        elif val == "":
+            return
         else:
-            self.readings.append(val)
-            self.ids.table.table.clear_widgets()
-            self.ids.table.table.add_widget(numbered_table("Cold Value", self.readings))
+            try:
+                float(val)
+                self.readings.append(val)
+                self.ids.table.table.clear_widgets()
+                self.ids.table.table.add_widget(numbered_table("Cold Value", self.readings))
+            except ValueError: 
+                p = Popup(title="Warning", size_hint = (None, None),
+                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
+                                                            "check if you used a comma(,) \n"
+                                                            "instead of a period(.)"))
+                p.open()
+            
     def next_up(self):
         '''used to abstract class specific features'''
         self.ids.table.table.clear_widgets()    
@@ -1110,7 +1129,7 @@ class ColdStart(BalanceCalibrationScreen):
         pass
     
     def record(self):
-        super(ColdStart, self).record(self.ids.cold_value.text)
+        super(ColdStart, self).record(self.ids.cold_value.val.text)
 
 class SettlingTime(BalanceCalibrationScreen):
     def next_up(self):
@@ -1118,7 +1137,7 @@ class SettlingTime(BalanceCalibrationScreen):
         self.parent.change("linearityup", "Linearity Up")
             
     def record(self):
-        super(SettlingTime, self).record(self.ids.settling_value.text)
+        super(SettlingTime, self).record(self.ids.settling_value.val.text)
 
     def previous(self):
         BalanceCalibrationScreen.previous(self, "cold", "Cold Start")
@@ -1168,15 +1187,24 @@ class LinearityUp(BalanceCalibrationScreen):
                   size_hint=(None, None), size=(400, 200))
             p.open()
         else:
-            self.count += 1 
-            self.readings["nominal"].append(nominal)
-            self.readings["up"].append(up)
-            #get the corresponding value of actual to nominal
-            self.readings["actual"].append(self.std_actual[
-                                            self.std_nominal.index(
-                                                nominal)])
-            self.ids.table.clear_widgets()
-            self.ids.table.add_widget(table(["nominal", "actual", "up"], self.readings))
+            try:
+                float(nominal)
+                float(up)
+                self.count += 1 
+                self.readings["nominal"].append(nominal)
+                self.readings["up"].append(up)
+                #get the corresponding value of actual to nominal
+                self.readings["actual"].append(self.std_actual[
+                                                self.std_nominal.index(
+                                                    nominal)])
+                self.ids.table.clear_widgets()
+                self.ids.table.add_widget(table(["nominal", "actual", "up"], self.readings))
+            except ValueError:
+                p = Popup(title="Warning", size_hint = (None, None),
+                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
+                                                            "check if you used a comma(,) \n"
+                                                            "instead of a period(.)"))
+                p.open()
 
 class Linearity(BalanceCalibrationScreen):
     def __init__(self, *args, **kwargs):
@@ -1219,6 +1247,15 @@ class Linearity(BalanceCalibrationScreen):
         
     def record(self):
         val = self.ids._value.val.text
+        try:
+            float(val)
+        except ValueError:
+            p = Popup(title="Warning", size_hint = (None, None),
+                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
+                                                            "check if you used a comma(,) \n"
+                                                            "instead of a period(.)"))
+            p.open()
+            return
         self.count += 1
         if self.count <= 5:
             self.ids._value.name = "Linearity Up"
@@ -1317,6 +1354,15 @@ class Repeatability(BalanceCalibrationScreen):
                                                self.readings))
     def record(self):
         val = self.ids._value.val.text
+        try:
+            float(val)
+        except:
+            p = Popup(title="Warning", size_hint = (None, None),
+                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
+                                                            "check if you used a comma(,) \n"
+                                                            "instead of a period(.)"))
+            p.open()
+            return
         self.count += 1
         if self.count <= 5:
             self.ids._value.name = "1/2 Load"
@@ -1352,11 +1398,27 @@ class OffCenter(BalanceCalibrationScreen):
     def previous(self):
         BalanceCalibrationScreen.previous(self, "repeat", "Repeatability")
     def record(self):
+
         val = self.ids._value.text
+        try:
+            float(val)
+        except:
+            p = Popup(title="Warning", size_hint = (None, None),
+                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
+                                                            "check if you used a comma(,) \n"
+                                                            "instead of a period(.)"))
+            p.open()
+            return
         self.count += 1
         if self.count > 5:
             print("Too many values")
         else:
+            pos = "A B C D E".split(" ")
+            current_pos = self.ids.which.text.split(" ")[1]
+            if current_pos != "E": 
+                new_pos = pos[pos.index(current_pos) + 1]
+            else: new_pos = current_pos
+            self.ids.which.text = "Position " + new_pos
             self.readings.append(val)
             self.ids.table.table.clear_widgets()
             self.ids.table.table.add_widget(numbered_table("Reading at", self.readings))
@@ -1400,29 +1462,6 @@ def table( data=[], values= {}):
     return layout
 
 
-def horizontal_table( data=["Instrument", "Customer", "Date", "Serial"], values= {"Instrument": ["Pressure Guage", "Balance", "Thermometer"],
-                                                  "Customer": ["Delta", "Delta", "Coca Cola"],
-                                                  "Date": ["16/5/16", "16/5/16", "16/5/16"],
-                                                  "Serial": ["123", "456", "789"]}):
-    layout = GridLayout(rows = len(data))
-    for i in range(len(data)):
-        row = data[i]
-        l = longest(values)
-        index = 0
-        layout.add_widget(Heading(text=row,
-                                font_size= 20 ))
-        while index < l:
-            if index  > (len(values[row]) - 1):    
-                layout.add_widget(Label(text="",size_hint=(None, None) ,size=(75, 50)))
-            
-            else:    
-                if i == 0 or i % 2 == 0:    
-                    layout.add_widget(LinCell(text=values[row][index]))
-                else:
-                    layout.add_widget(LinAltCell(text=values[row][index]))
-            index += 1
-    
-    return layout
 
 def numbered_table(heading = "reading", values = ["Un", "Deux", "Trois"]):
     layout = GridLayout(cols= 2)
