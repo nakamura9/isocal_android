@@ -847,9 +847,53 @@ class AutoclaveScreenManager(WhiteScreenManager):
         self.parent.parent.title.text = t
         self.current = s
 
-class AutoInfo(InstrumentInfoScreen):
+class AutoInfo(WhiteScreen):
+    def get_date(self):
+        next = datetime.date.today() + timedelta(days =180)
+        return next.strftime("%d/%m/%y")
+     
     def change(self):
         self.parent.change("instrument_specs", "Specifications")
+    
+    def next(self):
+         global standards
+         due = self.ids.due.val.text
+         name = self.ids.nom.val.text
+         serial = self.ids.sn.val.text
+         customer = self.ids.cus.val.text
+         manufacturer = self.ids.man.val.text
+         model = self.ids.model.val.text
+         standard_temp = self.ids.standard_temp.val.text
+         standard_p = self.ids.standard_p.val.text
+         stds = list(standards.keys())
+         if name == "" or customer == "" or standard_temp == "" or standard_p == "":
+             p=Popup(title="Warning!", size_hint=(None, None), size=(300, 150),
+                     content=Label(text= "Some fields cannot be empty"))
+             p.open()
+         elif standard_temp not in standards:
+             p=Popup(title="Warning!", size_hint=(None, None), size=(400, 400),
+                     content=Label(text= "The Instrument cannot be calibrated without \n"
+                                   "an acompanying standard. These are available:\n"
+                                   "{}".format("\n".join(stds))))
+             p.open()
+
+         elif standard_p not in standards:
+             p=Popup(title="Warning!", size_hint=(None, None), size=(400, 400),
+                     content=Label(text= "The Instrument cannot be calibrated without \n"
+                                   "an acompanying standard. These are available:\n"
+                                   "{}".format("\n".join(stds))))
+             p.open()
+         
+         else:
+             self.parent.instrument_info = [name, serial,
+                        customer,
+                        manufacturer, 
+                        model,standard_temp, standard_p, due]
+             
+             self.ids.nom.val.text =""
+             self.ids.sn.val.text = ""
+             self.change()
+
 
 class AutoSpecs(WhiteScreen):
     def next(self):
@@ -897,7 +941,8 @@ class AutoPressure(PressureReadingsScreen):
                       customer = info[2],
                       start_time= self.parent.start_time,
                       end_time = time.strftime("%H:%M", time.localtime(time.time())),
-                      date= d, due = info[6],
+                      date= d, 
+                      due = info[7],
                       name_of_instrument= info[0],
                       serial= info[1],
                       immersion_depth=specs[7],
@@ -909,7 +954,8 @@ class AutoPressure(PressureReadingsScreen):
                       resolution_p=specs[2],
                       units_temp=specs[5],
                       units_p=specs[3],
-                      standards=info[5],
+                      standard_temp=info[5],
+                      standard_p= info[6]
                       location=specs[6],
                       comments=self.ids.comments.text,
                       temp=readings_combined(self.parent.temp_readings),
@@ -925,101 +971,6 @@ class AutoPressure(PressureReadingsScreen):
                          "indicated": [],
                          "calculated": []}
 
-class ElectricalScreen(WhiteScreen):
-    title = StringProperty()
-    asm =ObjectProperty()
-
-class ElectricalScreenManager(WhiteScreenManager):
-    def __init__(self, *args, **kwargs):
-        super(ElectricalScreenManager, self).__init__(*args, **kwargs)
-        self.tables = {}
-        self.type= "electrical"
-        
-    def calibrate(self):
-        self.current = "readings"
-        self.title = "DC Voltage"
-        for i in self.current_screen.fields:
-            self.current_screen.ids.field_list.add_widget(Cell(text=i))
-        
-class EInfo(InstrumentInfoScreen):
-    pass
-
-class ESpecs(InstrumentSpecsScreen):
-    pass 
-
-class ElectricalReadingsScreen(WhiteScreen):
-    def __init__(self, *args, **kwargs):
-        super(ElectricalReadingsScreen, self).__init__(*args, **kwargs)
-        '''this readings scheme is meant to deal with more than a 150 readings
-        it catagorizes them by unit then by range. it comprises two lists of 
-        filters for the readings stored in self. fields and self.ranges. the same readdings screen is rectcled 
-        by the submit button and the results are stored in a dictionary called combined'''
-        
-        self.fields= "DC Voltage,AC Voltage,DC Current,AC Current,Resistance,Insulation,Diodes".split(",")
-        self.readings = {"Input": [],
-                         "Indicated": []}
-        self. combined = {}
-        self.current = 0
-        self.ranges = {"DC Voltage":["600mV", "6V", "60V", "600V", "1000V"],
-                       "AC Voltage": [],
-                       "DC Current": []}
-        self.count = 0
-        
-        
-    def record(self):
-        self.readings["Input"].append(self.ids.input.val.text)
-        self.readings["Indicated"].append(self.ids.reading.val.text)
-    
-        self.ids.table.table.clear_widgets()
-        self.ids.table.table.add_widget(table(["Input", "Indicated"],
-                                              self.readings))
-        
-        
-    def submit(self):
-        if self.current < 6:
-            self.combined[self.fields[self.current]] = readings_combined(self.readings)
-            for i in self.readings: self.readings[i] = []
-            self.current += 1
-        else:
-            global electrical
-            global outstanding
-        
-            d=datetime.date.today().strftime("%y/%m/%d") 
-            
-            info=self.parent.instrument_info
-            id = datetime.date.today().strftime("%d%m%Y")+info[1]
-            specs = self.parent.instrument_specs
-            table = self.parent.tables
-            electrical.put(id,
-                           customer = info[2],
-                           start_time= self.parent.start_time,
-                           end_time = time.strftime("%H:%M", time.localtime(time.time())),
-                           date= d,
-                           name_of_instrument= info[0],
-                           serial= info[1],
-                           immersion_depth=specs_t[5],
-                           manufacturer=info[3],
-                           model=info[4],
-                           resolution=specs[2],
-                           standards=info[5],
-                           location=specs[4],
-                           comments=self.ids.comments.text,
-                           dcvoltage=table["dcv"],
-                           acvoltage=table["acv"],
-                           dccurrent=table["dcc"],
-                           accurent=table["acc"],
-                           resistance=table["resistance"],
-                           diodes=table["diodes"],
-                           frequency=table["frequency"],
-                           temperature=table["temp"],
-                           insulation=table["insulation"])
-            
-            outstanding.put(id, name=info[0],
-                            customer = info[2],
-                            date=d,
-                            serial=info[1]) 
-            
-            self.parent.current = "info"
 
 class BalanceScreen(WhiteScreen):
     asm = ObjectProperty()

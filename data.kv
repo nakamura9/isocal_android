@@ -153,10 +153,6 @@ Base:
 	orientation: "vertical"
 	password: _password
 	user: _user
-    Image:
-        source: "iso.png"
-        size_hint_y:  5
- 
     HorizontalInput:
         size_hint_y: 1
         id: _user
@@ -187,6 +183,10 @@ Base:
 			size_hint_x: 1
             text: "Login"
 			on_press: app.root.validate(_user.val.text, _password.text, _message)
+
+    Image:
+        source: "iso.png"
+        size_hint_y:  5
 			
 			
 <Home>:
@@ -367,9 +367,7 @@ Base:
 		id: _autoclave
 		name: "autoclave"
 		
-	ElectricalScreen:
-		id: electrical
-		name: "electrical"
+
         
 <SummaryScreen>:
 	table: _table
@@ -436,6 +434,53 @@ Base:
 
 		
 <AutoInfo>:
+    WhiteAnchorLayout:
+        anchor_y: "center"
+        
+        BoxLayout:
+            orientation: "vertical"
+            spacing: 10
+            padding: 10, root.height * 0.0714
+			HorizontalInput:
+				name: "Due Date"
+				id: due
+				txt: root.get_date()
+				next: cus
+            HorizontalInput:
+                name: "Customer"
+                id: cus
+                next: nom
+            
+            HorizontalInput:
+                id: nom
+                name: "Name of Instrument"
+                next: sn
+				
+            HorizontalInput:
+                id: sn    
+                name: "Serial Number"
+                next: man
+                    
+            
+            HorizontalInput:
+                name: "Manufacturer"
+                id: man
+                next: model
+            
+            HorizontalInput:
+                name: "Model"
+                id: model
+				next: standard_t
+                
+			HorizontalInput:
+				name: "Temp. Standard"
+				id: standard_temp
+                next: standard_p
+
+            HorizontalInput:
+				name: "Pres. Standard"
+				id: standard_p
+            
 	
 <AutoSpecs>:					
 	unit: ""
@@ -517,85 +562,6 @@ Base:
 <AutoTemp>:
 	
 <AutoPressure>:
-
-
-<ElectricalScreen>:
-	
-	esm: esm
-	BoxLayout:
-		orientation: "vertical"
-        BlueLabel:
-            size_hint: (None, None)
-            size: (600, 50)
-            text: root.esm.title
-		ElectricalScreenManager:
-			id: esm
-			title: ""
-
-<ElectricalScreenManager>:
-	EInfo:
-		name:"info"
-	ESpecs:
-		name:"instrument_specs"
-	ElectricalReadingsScreen:
-		name: "readings"
-<EInfo>:
-	
-
-<ESpecs>:
-
-<ElectricalReadingsScreen>:
-	WhiteAnchorLayout:
-		anchor_y: "center"
-		BoxLayout:
-			spacing: 10
-			size_hint: None, None
-			size: 600, 430 
-			BoxLayout:
-				orientation: "vertical"
-				size_hint: None, None
-				size: 150, 350
-				id: field_list
-			BoxLayout:
-				size_hint: None, None
-				size: 440, 350
-				orientation: "vertical"
-				spacing: 10
-				ScrollView:
-					size_hint: None, None
-					size: 440, 150
-					CenteredTable:
-						size_hint: None, None
-						size: 440, 600
-						id: table
-				
-				BoxLayout:
-					spacing: 10
-					VerticalInput:
-						id: input
-						size: 215, 100
-						name: "Input"
-					VerticalInput:
-						id: reading
-						size: 215, 100
-						name: "Reading"
-					
-				Button:
-					text: "Record"
-					on_press: root.record()
-				BoxLayout:
-					spacing: 10
-					TextInput:
-						id: comments
-						multiline: True
-						height: 100
-						size_hint_x: 3
-						text: "Comments"
-					Button: 
-						id: sub
-						size_hint_x: 1
-						text:"Next"
-						on_press: root.submit()
 
 
 <UploadScreen>:
