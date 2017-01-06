@@ -20,7 +20,6 @@ from kivy.storage.jsonstore import JsonStore
 from kivy.uix.actionbar import ActionItem
 from kivy.uix.scrollview import ScrollView
 from kivy.core.window import Window
-from kivy.core.window import WindowBase 
 from kivy.uix.progressbar import ProgressBar
 from kivy.uix.popup import Popup
 from kivy.network.urlrequest import UrlRequest
@@ -44,7 +43,6 @@ LabelBase.register(name= "Modern Pictograms",
                    fn_regular = os.path.join(os.path.abspath(os.getcwd()), "ModernPictograms.ttf"))
 root = os.getcwd()
 Window.clear_color = [1, 1, 1, 1]
-WindowBase.softinput_mode = "below_target"
 
 balance = JsonStore("BALANCE.json")
 customers = JsonStore("CUSTOMERS.json")
@@ -393,6 +391,7 @@ class AbstractReadingsScreen(WhiteScreen):
                                                             "check if you used a comma(,) \n"
                                                             "instead of a period(.)"))
             p.open()
+            return
         if self.ids.nominal.val.text == "" or self.ids.actual.val.text == "":
             p = Popup(title="Warning", size_hint = (0.5, 0.1),
                       content=Label(text="You cannot enter empty fields"))
@@ -653,6 +652,7 @@ class UploadScreen(WhiteScreen):
                   "start_time":auto["start_time"],
                   "end_time":auto["end_time"],
                   "date":auto["date"],
+                  "due":auto["due"],
                   "serial":auto["serial"],
                   "immersion_depth":auto["immersion_depth"],
                   "manufacturer":auto["manufacturer"],
@@ -663,7 +663,8 @@ class UploadScreen(WhiteScreen):
                   "resolution_p":auto["resolution_p"],
                   "units_temp":auto["units_temp"],
                   "units_p":auto["units_p"],
-                  "standards":auto["standards"],
+                  "standard_temp":auto["standard_temp"],
+                  "standard_p":auto["standard_p"],
                   "location":auto["location"],
                   "comments":auto["comments"],
                   "temp":auto["temp"],

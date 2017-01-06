@@ -364,11 +364,10 @@ Base:
 <SummaryScreen>:
 	table: _table
 	BoxLayout:
-        padding: root.width * 0.1 , 0
 		ScrollView:
 			BoxLayout:
 				size_hint: None, None
-				size: root.width * 0.8, root.height * 3
+				size: root.width, root.height * 3
 				id: _table
 	
 
@@ -619,7 +618,6 @@ Base:
                     BoxLayout:
                         orientation: "vertical"
                         spacing: 10
-                        padding: 10
                         HorizontalInput:
                             size_hint_y: 1
                             name: "Name"
