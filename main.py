@@ -135,7 +135,6 @@ class SummaryScreen(Screen):
         
     def generate_table(self):
         global outstanding
-        print("called")
         values = {"Instrument": [],
                   "Serial": [],
                   "Customer": [],
@@ -175,7 +174,7 @@ class HomeScreenManager(WhiteScreenManager):
             if hasattr(self.current_screen.asm.current_screen, "next"):
                 self.current_screen.asm.current_screen.next()
         else:
-            print(self.current_screen.__dict__)
+            pass
             
             
     def record(self):
@@ -186,7 +185,7 @@ class HomeScreenManager(WhiteScreenManager):
                 self.current_screen.asm.current_screen.record()
              
         else:
-            print(self.current_screen.__dict__)
+            pass
             
     def submit(self):
         
@@ -196,7 +195,7 @@ class HomeScreenManager(WhiteScreenManager):
             if hasattr(self.current_screen.asm.current_screen, "submit"):
                 self.current_screen.asm.current_screen.submit()
         else:
-            print(self.current_screen.__dict__)
+            pass
             
                 
     def prev(self):
@@ -206,7 +205,7 @@ class HomeScreenManager(WhiteScreenManager):
             if hasattr(self.current_screen.asm, "previous"):
                 self.current_screen.asm.current_screen.previous()
         else:
-            print(self.current_screen.__dict__)
+            pass
             
     def clear(self):
         try:
@@ -217,7 +216,7 @@ class HomeScreenManager(WhiteScreenManager):
                 cur = self.current_screen.asm.current_screen
                 cur.clear()
             except Exception as e:
-                print("this also happened ", e)
+                pass
                 
     def clear_last(self):
         try:
@@ -228,7 +227,7 @@ class HomeScreenManager(WhiteScreenManager):
                 cur = self.current_screen.asm.current_screen
                 cur.clear_last()
             except Exception as e:
-                print("this also happened ", e)
+                pass
                 
     def change(self, s, title):
         self.parent.title.text = title
@@ -302,6 +301,13 @@ class InstrumentSpecsScreen(WhiteScreen):
         min = self.ids.min.text
         max = self.ids.max.text
         res = self.ids.res.val.text
+        try:
+            float(res)
+        except:
+            p=Popup(title="Warning!", size_hint=(0.5, 0.3),
+                    content=Label(text= "Resolution must be a number"))
+            p.open()
+            return
         units= self.ids.units.val.text 
         location= self.ids.location.val.text
         immersion= self.ids._immersion.val.text
@@ -319,7 +325,7 @@ class InstrumentSpecsScreen(WhiteScreen):
                                  }
         
         if min=="" or max=="" or res=="" or units=="" or location=="":
-            p=Popup(title="Warning!", size_hint=(0.5, 0.1),
+            p=Popup(title="Warning!", size_hint=(0.5, 0.3),
                     content=Label(text= "Some fields cannot be left empty"))
             p.open()
         else:
@@ -410,7 +416,7 @@ class AbstractReadingsScreen(WhiteScreen):
         if not self.called_next:
             self.called_next = True
             self.first = readings_combined(self.readings)
-            print("readings at next: ", self.readings)
+            
             
             if self.count < 1:
                 p = Popup(size_hint=(0.5, 0.1),
@@ -435,7 +441,7 @@ class AbstractReadingsScreen(WhiteScreen):
     
           
     def clear_readings(self):
-        '''if pressure use its onw algorithm bt defaults to readings_combined'''
+        '''if pressure use its own algorithm bt defaults to readings_combined'''
         for i in self.readings:
                     self.readings[i] = []
         
@@ -449,15 +455,12 @@ class AbstractReadingsScreen(WhiteScreen):
         global outstanding
         info = self.parent.instrument_info
         specs= self.parent.instrument_specs
-        print("readings at submit: ", self.readings)
         if not self.called_next:
-            print("make sure next is called")
             self.next()
         else:
             self.count = 0
             id = "{}{}".format(datetime.date.today().strftime("%d%m%y"),
                                    info[1])
-            print("first ", self.first) 
             general.put(id,# serial 
                     name="general",
                     due = info[6],
@@ -480,7 +483,6 @@ class AbstractReadingsScreen(WhiteScreen):
                         customer=self.parent.instrument_info[2],
                         date=datetime.date.today().strftime("%d/%m/%Y"),
                         serial=self.parent.instrument_info[1]) #serial
-            print(general.get(id))
             self.parent.instrument_info = []
             self.parent.instrument_specs = []
             self.readings = {"indicated": [],
@@ -575,7 +577,6 @@ class UploadScreen(WhiteScreen):
                 outstanding.delete(key)
                 self.messages.item_strings.append("Upload completed sucessfully") 
             else:
-                print(req.text)
                 self.messages.item_strings.append("Upload unsuccessful")
         except Exception as e:
             self.messages.item_strings.append("""An error occured while trying to upload this certificate:
@@ -629,12 +630,10 @@ class UploadScreen(WhiteScreen):
     
                 req= requests.post("http://{}/mobile/upload_balance".format(self.host), data=payload)
             if req.text == "success":
-                print(key)
                 self.balance.append(key)
                 outstanding.delete(key)
                 self.messages.item_strings.append("Upload completed sucessfully") 
             else:
-                print(req.text)
                 self.messages.item_strings.append("Upload unsuccessful")
         except Exception as e: 
             self.messages.item_strings.append("""An error occured while trying to upload this certificate:
@@ -675,13 +674,13 @@ class UploadScreen(WhiteScreen):
                 payload={"key": k,
                          "value": value}
                 req= requests.post("http://{}/mobile/upload_autoclave".format(self.host), data=payload)
-            print(req.text)
+            
             if req.text == "success":
                 self.autoclave.append(key)
                 outstanding.delete(key)
                 self.messages.item_strings.append("Upload completed sucessfully") 
             else:
-                print(req.text)
+                
                 self.messages.item_strings.append("Upload unsuccessful")
         except Exception as e:
             self.messages.item_strings.append("""An error occured while trying to upload this certificate:
@@ -699,7 +698,6 @@ class UploadScreen(WhiteScreen):
                   "uncertainty":std["uncertainty"]}
         try:
             req= requests.post("http://{}/mobile/upload_standard".format(self.host), data=params)
-            print(req.text)
         except Exception as e:
             self.messages.item_strings.append("""An error occured while trying to upload this standard:
                                     {}""".format(e))
@@ -716,7 +714,7 @@ class UploadScreen(WhiteScreen):
         try:
             if self.host == "":
                 p = Popup(title= "warning", content= Label(text="The host cannot be empty"),
-                size_hint=(0.5, 0.1))
+                size_hint=(0.5, 0.3))
                 p.open()
             else:
                 self.messages.item_strings.append("Connecting to the server...")
@@ -726,7 +724,6 @@ class UploadScreen(WhiteScreen):
             self.messages.item_strings.append("Uploading failed, try again")
             code = 404
             
-        print(code)
         if code == 200 or code == "200":
             for key in general:
                 self.messages.item_strings.append("Uploading {}".format(key))
@@ -874,18 +871,18 @@ class AutoInfo(WhiteScreen):
          standard_p = self.ids.standard_p.val.text
          stds = list(standards.keys())
          if name == "" or customer == "" or standard_temp == "" or standard_p == "":
-             p=Popup(title="Warning!", size_hint=(None, None), size=(300, 150),
+             p=Popup(title="Warning!", size_hint=(0.6, 0.3),
                      content=Label(text= "Some fields cannot be empty"))
              p.open()
          elif standard_temp not in standards:
-             p=Popup(title="Warning!", size_hint=(None, None), size=(400, 400),
+             p=Popup(title="Warning!", size_hint=(1, 1),
                      content=Label(text= "The Instrument cannot be calibrated without \n"
                                    "an acompanying standard. These are available:\n"
                                    "{}".format("\n".join(stds))))
              p.open()
 
          elif standard_p not in standards:
-             p=Popup(title="Warning!", size_hint=(None, None), size=(400, 400),
+             p=Popup(title="Warning!", size_hint=(1, 1),
                      content=Label(text= "The Instrument cannot be calibrated without \n"
                                    "an acompanying standard. These are available:\n"
                                    "{}".format("\n".join(stds))))
@@ -910,18 +907,26 @@ class AutoSpecs(WhiteScreen):
         range_pressure = self.ids.min_p.text + "-" + self.ids.max_p.text
         res_p = self.ids.res_p.val.text
         res_t = self.ids.res_t.val.text
+        try:
+            float(res_p)
+            float(res_t)
+        except:
+            p=Popup(title="Warning!", size_hint=(0.6, 0.3),
+                    content=Label(text= "Each resolution must be a number"))
+            p.open()
+            return
         units_p= self.ids.units_p.val.text
         units_t= self.ids.units_t.val.text 
         location= self.ids.location.val.text
         immersion= self.ids._immersion.val.text
         pressure_units= "bar kpa mpa pa psi".split(" ")
         if units_p not in pressure_units:
-            p = Popup(size_hint =(None, None), size=(400, 200), title = "Warning!",
+            p = Popup(size_hint =(1, 0.5), title = "Warning!",
                               content=Label(text="""You Have entered an invalid unit. Try one of
                                               {}""".format(", ".join(pressure_units))))
             p.open()
         elif range_temp=="-" or range_pressure=="-" or res_p=="" or units_t=="" or location=="":
-            p=Popup(title="Warning!", size_hint=(None, None), size=(300, 150),
+            p=Popup(title="Warning!", size_hint=(0.6, 0.3),
                     content=Label(text= "Some fields cannot be empty"))
             p.open()
         else:
@@ -970,7 +975,6 @@ class AutoPressure(PressureReadingsScreen):
                       temp=readings_combined(self.parent.temp_readings),
                       pressure=readings_combined(self.readings))
         
-        print(autoclave.get(id))
         outstanding.put(id, name=info[0],
                         customer = info[2],
                         date=d,
@@ -1004,7 +1008,7 @@ class BalanceScreenManager(WhiteScreenManager):
                                    info[1])
         
         balance.put(id,
-                    name="balance",
+                    name=info[0],
                     serial=info[1],
                     customer=info[2],manufacturer=info[3],
                     model=info[4], _range=specs[0]+ "-" + specs[1],
@@ -1032,7 +1036,6 @@ class BalanceScreenManager(WhiteScreenManager):
                     repeat_full = self.repeat_full,
                     off_center = self.off
                     )
-        print(balance.get(id))
         outstanding.put(id,
                         name=info[0],
                         customer=info[2],
@@ -1086,15 +1089,16 @@ class BalanceCalibrationScreen(WhiteScreen):
         else:
             try:
                 float(val)
-                self.readings.append(val)
-                self.ids.table.table.clear_widgets()
-                self.ids.table.table.add_widget(numbered_table("Cold Value", self.readings))
             except ValueError: 
-                p = Popup(title="Warning", size_hint = (None, None),
-                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
+                p = Popup(title="Warning", size_hint = (1, 0.6),
+                                        content=Label(text="The data entered was invalid, \n" 
                                                             "check if you used a comma(,) \n"
                                                             "instead of a period(.)"))
                 p.open()
+            self.readings.append(val)
+            self.ids.table.table.clear_widgets()
+            self.ids.table.table.add_widget(numbered_table("Cold Value", self.readings))
+            
             
     def next_up(self):
         '''used to abstract class specific features'''
@@ -1103,7 +1107,7 @@ class BalanceCalibrationScreen(WhiteScreen):
     def next(self):
         if self.count < 5:
             p = Popup(title="Warning!", content = Label(text="Too Few values"),
-                  size_hint=(None, None), size=(300, 150))
+                size_hint=(0.5, 0.3))
             p.open()
         else:
             self.parent.transition_direction = "left"
@@ -1123,7 +1127,17 @@ class ColdStart(BalanceCalibrationScreen):
     def next_up(self):
         self.parent.start_time = datetime.datetime.now().strftime("%H:%M:%S")
         self.parent.cold = "|".join(self.readings)
+        try:
+            float(self.ids.mass.val.text)
+        except:
+            p = Popup(title="Warning!", content = Label(text=
+                                "The mass must be a numerical value\n"
+                                "make sure no comma's(,) are present"),
+                size_hint=(0.5, 0.3))
+            p.open()
+            return
         self.parent.cold_mass = self.ids.mass.val.text
+
         self.parent.change("settling", "Settling Time")
         
     def previous(self):
@@ -1175,37 +1189,38 @@ class LinearityUp(BalanceCalibrationScreen):
     def record(self):
         nominal = self.ids.nominal_value.val.text
         up = self.ids.linearity_value.val.text
+        try:
+            float(up)
+            float(nominal)
+        except:
+            p = Popup(title="Warning", size_hint = (1, 0.6),
+                                        content=Label(text="The data entered was invalid, \n" 
+                                                            "check if you used a comma(,) \n"
+                                                            "instead of a period(.)"))
+            p.open()
         self.standards = standards.get(self.parent.instrument_info[5])
         self.std_nominal = self.standards["nominal"].split("|")
         self.std_actual = self.standards["actual"].split("|")
-        if self.count > 5:
+        if self.count >= 5:
             return
         elif nominal not in self.std_nominal:
             p = Popup(title="Warning!", content = Label(text="Incorrect "
                                                 "Nominal value for given standard\n"
                                                 "These are available: {}".format(
                                                 ", ".join(self.std_nominal))),
-                  size_hint=(None, None), size=(400, 200))
+                size_hint=(1, 0.4))
             p.open()
         else:
-            try:
-                float(nominal)
-                float(up)
-                self.count += 1 
-                self.readings["nominal"].append(nominal)
-                self.readings["up"].append(up)
-                #get the corresponding value of actual to nominal
-                self.readings["actual"].append(self.std_actual[
+            self.count += 1 
+            self.readings["nominal"].append(nominal)
+            self.readings["up"].append(up)
+            #get the corresponding value of actual to nominal
+            self.readings["actual"].append(self.std_actual[
                                                 self.std_nominal.index(
                                                     nominal)])
-                self.ids.table.clear_widgets()
-                self.ids.table.add_widget(table(["nominal", "actual", "up"], self.readings))
-            except ValueError:
-                p = Popup(title="Warning", size_hint = (None, None),
-                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
-                                                            "check if you used a comma(,) \n"
-                                                            "instead of a period(.)"))
-                p.open()
+            self.ids.table.clear_widgets()
+            self.ids.table.add_widget(table(["nominal", "actual", "up"], self.readings))
+            
 
 class Linearity(BalanceCalibrationScreen):
     def __init__(self, *args, **kwargs):
@@ -1227,11 +1242,11 @@ class Linearity(BalanceCalibrationScreen):
         BalanceCalibrationScreen.previous(self, "linearityup", "Linearity(before calibration)")        
     def clear_last(self):
         if self.count > 0:
-            if self.count < 5:
+            if self.count <= 5:
                 l = len(self.readings["Linearity Up"]) -1
                 self.readings["Linearity Up"] = self.readings["Linearity Up"][:l]
             
-            elif self.count > 5 and self.count < 10:
+            elif self.count > 5 and self.count <= 10:
                 l = len(self.readings["Linearity Down"]) -1
                 self.readings["Linearity Down"] = self.readings["Linearity Down"][:l]
             
@@ -1251,8 +1266,8 @@ class Linearity(BalanceCalibrationScreen):
         try:
             float(val)
         except ValueError:
-            p = Popup(title="Warning", size_hint = (None, None),
-                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
+            p = Popup(title="Warning", size_hint = (1, 0.5),
+                                 content=Label(text="The data entered was invalid, \n" 
                                                             "check if you used a comma(,) \n"
                                                             "instead of a period(.)"))
             p.open()
@@ -1298,7 +1313,7 @@ class TaringLinearity(BalanceCalibrationScreen):
         tare = self.ids.tare_value.val.text
         indicated =self.ids.nominal_value.val.text
         self.count += 1
-        if self.count > 5:
+        if self.count >= 5:
             return
         else:
             self.readings["Tare"].append(tare)
@@ -1358,8 +1373,8 @@ class Repeatability(BalanceCalibrationScreen):
         try:
             float(val)
         except:
-            p = Popup(title="Warning", size_hint = (None, None),
-                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
+            p = Popup(title="Warning", size_hint = (1, 0.4),
+                                     content=Label(text="The data entered was invalid, \n" 
                                                             "check if you used a comma(,) \n"
                                                             "instead of a period(.)"))
             p.open()
@@ -1404,15 +1419,15 @@ class OffCenter(BalanceCalibrationScreen):
         try:
             float(val)
         except:
-            p = Popup(title="Warning", size_hint = (None, None),
-                      size=(400, 400), content=Label(text="The data entered was invalid, \n" 
+            p = Popup(title="Warning", size_hint = (1, 0.4), 
+                                    content=Label(text="The data entered was invalid, \n" 
                                                             "check if you used a comma(,) \n"
                                                             "instead of a period(.)"))
             p.open()
             return
         self.count += 1
         if self.count > 5:
-            print("Too many values")
+            pass
         else:
             pos = "A B C D E".split(" ")
             current_pos = self.ids.which.text.split(" ")[1]
@@ -1429,14 +1444,23 @@ class OffCenter(BalanceCalibrationScreen):
     def submit(self):
         if self.count < 5:
             p = Popup(title="Warning!", content = Label(text="Too Few values"),
-                  size_hint=(None, None), size=(300, 150))
+                  size_hint=(0.6, 0.3))
             p.open()
         else:
             
             self.ids.table.table.clear_widgets()
             self.parent.off = ":".join(self.readings)
-            print(self.parent.off)
+            
             self.readings = []
+            try:
+                float(self.ids.off.val.text)
+            except:
+                p = Popup(title="Warning!", content = Label(text=
+                                "The mass must be a numerical value\n"
+                                "make sure no comma's(,) are present"),
+                size_hint=(0.5, 0.3))
+                p.open()
+            return
             self.parent.off_center_mass = self.ids.off.val.text
             self.parent.calibrate()
             self.parent.current = "cold" 
@@ -1489,7 +1513,6 @@ def longest(d):
     return long
 
 def readings_combined(d):
-    print("input ", d)
     if len(d) == 3:
         l = len(d["applied"])
         compressed = []
@@ -1509,7 +1532,6 @@ def readings_combined(d):
             act = d["actual"][i]
             i += 1
             compressed.append(str(ind) + ":" + str(act))
-    print(compressed)
     return ";".join(compressed)
         
 
