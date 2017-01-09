@@ -1448,10 +1448,6 @@ class OffCenter(BalanceCalibrationScreen):
             p.open()
         else:
             
-            self.ids.table.table.clear_widgets()
-            self.parent.off = ":".join(self.readings)
-            
-            self.readings = []
             try:
                 float(self.ids.off.val.text)
             except:
@@ -1460,7 +1456,11 @@ class OffCenter(BalanceCalibrationScreen):
                                 "make sure no comma's(,) are present"),
                 size_hint=(0.5, 0.3))
                 p.open()
-            return
+                return
+            
+            self.ids.table.table.clear_widgets()
+            self.parent.off = ":".join(self.readings)
+            self.readings = []
             self.parent.off_center_mass = self.ids.off.val.text
             self.parent.calibrate()
             self.parent.current = "cold" 
